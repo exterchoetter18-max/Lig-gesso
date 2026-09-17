@@ -1,26 +1,52 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Identidade Lig Gesso */
+  --brand-bg: #15100d;
+  --brand-bg-elevated: #1c1512;
+  --brand-border: #2c221c;
+  --brand-orange: #f07a1f;
+  --brand-orange-hover: #ff8c3a;
+  --brand-text: #ffffff;
+  --brand-text-muted: #c9c2bc;
+
+  /* Área de conteúdo (clara, para leitura de tabelas/formulários) */
+  --background: #f5f4f2;
+  --surface: #ffffff;
+  --surface-muted: #ece9e5;
+  --foreground: #1c1512;
+  --foreground-muted: #6b6259;
+  --border: #e3ded8;
+  --danger: #d1453b;
+  --success: #1a8f4c;
+  --warning: #d99a1b;
 }
 
 @theme inline {
+  --color-brand-bg: var(--brand-bg);
+  --color-brand-bg-elevated: var(--brand-bg-elevated);
+  --color-brand-border: var(--brand-border);
+  --color-brand-orange: var(--brand-orange);
+  --color-brand-orange-hover: var(--brand-orange-hover);
+  --color-brand-text: var(--brand-text);
+  --color-brand-text-muted: var(--brand-text-muted);
+
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
   --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-border: var(--border);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }

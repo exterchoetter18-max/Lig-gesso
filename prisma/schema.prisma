@@ -1,0 +1,140 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
+
+model Client {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String?
+  email     String?
+  address   String?
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projects      Project[]
+  appointments  Appointment[]
+  documents     Document[]
+}
+
+enum ProjectStatus {
+  ORCAMENTO
+  EM_ANDAMENTO
+  CONCLUIDO
+  CANCELADO
+}
+
+model Project {
+  id          String        @id @default(cuid())
+  title       String
+  description String?
+  status      ProjectStatus @default(ORCAMENTO)
+  startDate   DateTime?
+  endDate     DateTime?
+  budget      Float?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  clientId String
+  client   Client @relation(fields: [clientId], references: [id])
+
+  stockMovements StockMovement[]
+  transactions   Transaction[]
+  appointments   Appointment[]
+  documents      Document[]
+}
+
+model Material {
+  id          String   @id @default(cuid())
+  name        String
+  unit        String
+  quantity    Float    @default(0)
+  minQuantity Float    @default(0)
+  unitCost    Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  movements StockMovement[]
+}
+
+enum MovementType {
+  ENTRADA
+  SAIDA
+}
+
+model StockMovement {
+  id        String       @id @default(cuid())
+  type      MovementType
+  quantity  Float
+  date      DateTime     @default(now())
+  notes     String?
+  createdAt DateTime     @default(now())
+
+  materialId String
+  material   Material @relation(fields: [materialId], references: [id])
+
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
+}
+
+enum TransactionType {
+  ENTRADA
+  SAIDA
+}
+
+model Transaction {
+  id          String          @id @default(cuid())
+  type        TransactionType
+  category    String
+  amount      Float
+  date        DateTime        @default(now())
+  description String?
+  createdAt   DateTime        @default(now())
+
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
+}
+
+model Appointment {
+  id        String   @id @default(cuid())
+  title     String
+  date      DateTime
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  clientId String?
+  client   Client? @relation(fields: [clientId], references: [id])
+
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
+}
+
+model Document {
+  id         String   @id @default(cuid())
+  name       String
+  fileUrl    String
+  mimeType   String
+  size       Int
+  uploadedAt DateTime @default(now())
+
+  clientId String?
+  client   Client? @relation(fields: [clientId], references: [id])
+
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
+}
