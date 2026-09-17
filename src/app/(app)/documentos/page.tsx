@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { createDocument, deleteDocument } from "@/lib/actions/documents";
-import { formatDate, formatFileSize } from "@/lib/format";
+import { deleteQuote } from "@/lib/actions/quotes";
+import { formatCurrency, formatDate, formatFileSize } from "@/lib/format";
 import {
   PageHeader,
   Card,
@@ -12,10 +14,14 @@ import {
 } from "@/components/ui";
 
 export default async function DocumentosPage() {
-  const [documents, clients, projects] = await Promise.all([
+  const [documents, quotes, clients, projects] = await Promise.all([
     prisma.document.findMany({
       orderBy: { uploadedAt: "desc" },
       include: { client: true, project: true },
+    }),
+    prisma.quote.findMany({
+      orderBy: { createdAt: "desc" },
+      include: { client: true, items: true },
     }),
     prisma.client.findMany({ orderBy: { name: "asc" } }),
     prisma.project.findMany({ orderBy: { title: "asc" } }),
@@ -29,7 +35,55 @@ export default async function DocumentosPage() {
       />
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
+        <div className="flex flex-col gap-6 lg:col-span-2">
+          <Card>
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="text-sm font-semibold text-foreground">Orçamentos</h2>
+              <Link
+                href="/orcamentos/novo"
+                className="rounded-lg bg-brand-orange px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-orange-hover"
+              >
+                + Novo orçamento
+              </Link>
+            </div>
+            {quotes.length === 0 ? (
+              <EmptyState message="Nenhum orçamento gerado ainda." />
+            ) : (
+              <ul className="flex flex-col gap-2">
+                {quotes.map((quote) => {
+                  const total = quote.items.reduce((sum, item) => sum + item.value, 0);
+                  return (
+                    <li
+                      key={quote.id}
+                      className="flex items-center justify-between rounded-lg border border-border px-3 py-2 text-sm"
+                    >
+                      <a
+                        href={`/orcamentos/${quote.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1"
+                      >
+                        <span className="font-medium text-foreground hover:text-brand-orange">
+                          {quote.client.name}
+                        </span>
+                        <span className="ml-2 text-foreground-muted">
+                          {formatCurrency(total)} · {formatDate(quote.createdAt)}
+                        </span>
+                      </a>
+                      <form action={deleteQuote.bind(null, quote.id)}>
+                        <Button type="submit" variant="danger" className="px-2 py-1 text-xs">
+                          Excluir
+                        </Button>
+                      </form>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </Card>
+
+          <Card>
+            <h2 className="mb-3 text-sm font-semibold text-foreground">Arquivos enviados</h2>
           {documents.length === 0 ? (
             <EmptyState message="Nenhum documento enviado ainda." />
           ) : (
@@ -82,7 +136,8 @@ export default async function DocumentosPage() {
               </tbody>
             </Table>
           )}
-        </Card>
+          </Card>
+        </div>
 
         <Card>
           <h2 className="mb-4 text-sm font-semibold text-foreground">Enviar documento</h2>

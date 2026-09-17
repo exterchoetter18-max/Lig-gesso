@@ -29,6 +29,7 @@ model Client {
   projects      Project[]
   appointments  Appointment[]
   documents     Document[]
+  quotes        Quote[]
 }
 
 enum ProjectStatus {
@@ -56,6 +57,7 @@ model Project {
   transactions   Transaction[]
   appointments   Appointment[]
   documents      Document[]
+  quotes         Quote[]
 }
 
 model Material {
@@ -122,6 +124,32 @@ model Appointment {
 
   projectId String?
   project   Project? @relation(fields: [projectId], references: [id])
+}
+
+model Quote {
+  id            String   @id @default(cuid())
+  validityDays  Int      @default(30)
+  deliveryTerm  String   @default("A combinar")
+  notes         String?
+  createdAt     DateTime @default(now())
+
+  clientId String
+  client   Client @relation(fields: [clientId], references: [id])
+
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
+
+  items QuoteItem[]
+}
+
+model QuoteItem {
+  id          String @id @default(cuid())
+  description String
+  value       Float
+  order       Int    @default(0)
+
+  quoteId String
+  quote   Quote @relation(fields: [quoteId], references: [id], onDelete: Cascade)
 }
 
 model Document {
