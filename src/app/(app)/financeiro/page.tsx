@@ -33,14 +33,20 @@ export default async function FinanceiroPage({
   const { mes } = await searchParams;
   const { start, end, value } = monthRange(mes);
 
-  const [transactions, projects] = await Promise.all([
+  const [transactions, projects, allTransactions] = await Promise.all([
     prisma.transaction.findMany({
       where: { date: { gte: start, lt: end } },
       orderBy: { date: "desc" },
       include: { project: true },
     }),
     prisma.project.findMany({ orderBy: { title: "asc" } }),
+    prisma.transaction.findMany({ select: { type: true, amount: true } }),
   ]);
+
+  const saldoCaixa = allTransactions.reduce(
+    (sum, t) => sum + (t.type === "ENTRADA" ? t.amount : -t.amount),
+    0,
+  );
 
   const totalEntradas = transactions
     .filter((t) => t.type === "ENTRADA")
@@ -61,6 +67,75 @@ export default async function FinanceiroPage({
         title="Financeiro"
         description="Entradas e saídas de caixa da empresa."
       />
+
+      <Card className="mb-6">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <p className="text-xs font-medium uppercase text-foreground-muted">
+              Caixa da empresa
+            </p>
+            <p
+              className={`mt-1 text-2xl font-bold ${saldoCaixa >= 0 ? "text-foreground" : "text-danger"}`}
+            >
+              {formatCurrency(saldoCaixa)}
+            </p>
+          </div>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <form
+            action={createTransaction}
+            className="flex flex-col gap-2 rounded-xl border border-success/30 bg-success/5 p-3"
+          >
+            <h3 className="text-sm font-semibold text-success">+ Adicionar ao caixa</h3>
+            <input type="hidden" name="type" value="ENTRADA" />
+            <input type="hidden" name="category" value="Adição ao caixa" />
+            <input
+              type="hidden"
+              name="date"
+              value={new Date().toISOString().slice(0, 10)}
+            />
+            <Input
+              name="amount"
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="Valor (R$)"
+              required
+            />
+            <Input name="description" placeholder="Descrição (opcional)" />
+            <Button type="submit" className="mt-1 self-start">
+              Adicionar
+            </Button>
+          </form>
+
+          <form
+            action={createTransaction}
+            className="flex flex-col gap-2 rounded-xl border border-danger/30 bg-danger/5 p-3"
+          >
+            <h3 className="text-sm font-semibold text-danger">− Retirar do caixa</h3>
+            <input type="hidden" name="type" value="SAIDA" />
+            <input type="hidden" name="category" value="Retirada de caixa" />
+            <input
+              type="hidden"
+              name="date"
+              value={new Date().toISOString().slice(0, 10)}
+            />
+            <Input
+              name="amount"
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="Valor (R$)"
+              required
+            />
+            <Input name="description" placeholder="Motivo da retirada *" required />
+            <Button type="submit" variant="danger" className="mt-1 self-start">
+              Retirar
+            </Button>
+          </form>
+        </div>
+      </Card>
 
       <form className="mb-6 flex items-end gap-3">
         <Field label="Mês">
