@@ -45,7 +45,7 @@ Acesse http://localhost:3000. Login inicial:
 
 | Variável | Descrição |
 | --- | --- |
-| `DATABASE_URL` | Connection string do Supabase — **Transaction pooler, porta 6543**, com `?pgbouncer=true&connection_limit=5`. Não usar o Session pooler (porta 5432) aqui: ele tem um limite baixo e fixo de conexões simultâneas (15 no plano free) e derruba o site sob uso concorrente. |
+| `DATABASE_URL` | Connection string do Supabase — **Transaction pooler, porta 6543**, com `?pgbouncer=true&connection_limit=4&pool_timeout=20`. `connection_limit` baixo é proposital: em pooler no modo transaction, cada instância serverless deve pedir poucas conexões (o pooler multiplexa muitas instâncias sobre seu próprio pool, que é limitado). Um valor alto aqui esgota esse pool sob concorrência real. Não usar o Session pooler (porta 5432) aqui: ele tem um limite ainda menor e fixo de conexões simultâneas (15 no plano free) e derruba o site sob qualquer uso concorrente. |
 | `DIRECT_URL` | Connection string do Session pooler (porta 5432) — usada só pelo Prisma para `migrate`, onde não há problema de concorrência |
 | `SUPABASE_URL` | URL do projeto Supabase |
 | `SUPABASE_SERVICE_ROLE_KEY` | Chave secreta (service role) — só usada no servidor |
@@ -65,6 +65,12 @@ Acesse http://localhost:3000. Login inicial:
    - `NEXTAUTH_URL` = a URL que o Vercel gerar para o projeto (dá pra ajustar depois)
 4. Deploy. No primeiro boot, o comando de start já roda as migrações e cria os 2
    usuários iniciais automaticamente (`prisma migrate deploy && npm run db:seed && next start`).
+
+> **Região das funções**: o `vercel.json` fixa a região das funções serverless em
+> `pdx1` (Portland/Oregon), perto do banco Supabase (`us-west-2`). Se o banco for
+> recriado em outra região no futuro, atualize esse arquivo — rodar a função longe
+> do banco (ex.: São Paulo ↔ Oregon) adiciona segundos de latência por consulta e
+> causa falhas intermitentes.
 
 ## Estrutura dos módulos
 
