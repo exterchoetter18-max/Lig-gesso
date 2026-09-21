@@ -2,7 +2,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { updateClient, deleteClient } from "@/lib/actions/clients";
-import { formatDate, PROJECT_STATUS_LABEL, PROJECT_STATUS_TONE } from "@/lib/format";
+import {
+  formatCurrency,
+  formatDate,
+  PROJECT_STATUS_LABEL,
+  PROJECT_STATUS_TONE,
+} from "@/lib/format";
 import {
   PageHeader,
   Card,
@@ -29,6 +34,7 @@ export default async function ClienteDetailPage({
     include: {
       projects: { orderBy: { createdAt: "desc" } },
       documents: { orderBy: { uploadedAt: "desc" } },
+      quotes: { orderBy: { createdAt: "desc" }, include: { items: true } },
     },
   });
 
@@ -41,7 +47,7 @@ export default async function ClienteDetailPage({
     <div>
       <PageHeader
         title={client.name}
-        description="Dados do cliente, obras e documentos vinculados."
+        description="Dados do cliente, obras, orçamentos e documentos vinculados."
       />
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -69,6 +75,36 @@ export default async function ClienteDetailPage({
                     </Link>
                   </li>
                 ))}
+              </ul>
+            )}
+          </div>
+
+          <div>
+            <h2 className="mb-3 text-sm font-semibold text-foreground">
+              Orçamentos
+            </h2>
+            {client.quotes.length === 0 ? (
+              <EmptyState message="Nenhum orçamento gerado para este cliente." />
+            ) : (
+              <ul className="flex flex-col gap-2">
+                {client.quotes.map((quote) => {
+                  const total = quote.items.reduce((sum, item) => sum + item.value, 0);
+                  return (
+                    <li key={quote.id}>
+                      <a
+                        href={`/orcamentos/${quote.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between rounded-lg border border-border px-3 py-2 hover:border-brand-orange"
+                      >
+                        <span className="text-foreground">{formatCurrency(total)}</span>
+                        <span className="text-xs text-foreground-muted">
+                          {formatDate(quote.createdAt)}
+                        </span>
+                      </a>
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </div>
