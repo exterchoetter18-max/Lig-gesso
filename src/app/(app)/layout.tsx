@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import Link from "next/link";
 import { auth } from "@/auth";
 import { Logo } from "@/components/logo";
 import { SidebarNav, MobileNav } from "@/components/sidebar-nav";
@@ -23,6 +24,12 @@ export default async function AppLayout({
           <p className="truncate px-3 pb-1 text-xs text-brand-text-muted">
             {session?.user?.name}
           </p>
+          <Link
+            href="/conta"
+            className="block rounded-lg px-3 py-2 text-left text-sm font-medium text-brand-text-muted transition-colors hover:bg-brand-bg-elevated hover:text-brand-text"
+          >
+            Minha conta
+          </Link>
           <LogoutButton />
         </div>
       </aside>
@@ -31,7 +38,15 @@ export default async function AppLayout({
       <header className="flex flex-col bg-brand-bg md:hidden">
         <div className="flex items-center justify-between px-4 py-3">
           <Logo />
-          <LogoutButton />
+          <div className="flex items-center gap-3">
+            <Link
+              href="/conta"
+              className="text-sm font-medium text-brand-text-muted hover:text-brand-text"
+            >
+              Minha conta
+            </Link>
+            <LogoutButton />
+          </div>
         </div>
         <MobileNav />
       </header>
