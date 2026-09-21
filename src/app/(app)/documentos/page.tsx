@@ -70,11 +70,19 @@ export default async function DocumentosPage() {
                           {formatCurrency(total)} · {formatDate(quote.createdAt)}
                         </span>
                       </a>
-                      <form action={deleteQuote.bind(null, quote.id)}>
-                        <Button type="submit" variant="danger" className="px-2 py-1 text-xs">
-                          Excluir
-                        </Button>
-                      </form>
+                      <div className="flex shrink-0 items-center gap-2">
+                        <Link
+                          href={`/orcamentos/${quote.id}/editar`}
+                          className="rounded-lg border border-border px-2 py-1 text-xs font-medium text-foreground-muted hover:border-brand-orange hover:text-brand-orange"
+                        >
+                          Editar
+                        </Link>
+                        <form action={deleteQuote.bind(null, quote.id)}>
+                          <Button type="submit" variant="danger" className="px-2 py-1 text-xs">
+                            Excluir
+                          </Button>
+                        </form>
+                      </div>
                     </li>
                   );
                 })}

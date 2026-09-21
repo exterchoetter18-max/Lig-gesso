@@ -3,11 +3,19 @@
 import { useState } from "react";
 import { Input, Button } from "@/components/ui";
 
-type Row = { key: number };
+type Row = { key: number; description?: string; value?: number };
 
-export function QuoteItemRows() {
-  const [rows, setRows] = useState<Row[]>([{ key: 0 }]);
-  const [nextKey, setNextKey] = useState(1);
+export function QuoteItemRows({
+  initialItems,
+}: {
+  initialItems?: { description: string; value: number }[];
+}) {
+  const [rows, setRows] = useState<Row[]>(
+    initialItems && initialItems.length > 0
+      ? initialItems.map((item, i) => ({ key: i, ...item }))
+      : [{ key: 0 }],
+  );
+  const [nextKey, setNextKey] = useState(rows.length);
 
   function addRow() {
     setRows((r) => [...r, { key: nextKey }]);
@@ -33,6 +41,7 @@ export function QuoteItemRows() {
           <Input
             name="itemDescription"
             placeholder="Ex: Forro em gesso Drywall (com material)"
+            defaultValue={row.description}
             required
           />
           <div className="flex items-center gap-2 sm:contents">
@@ -42,6 +51,7 @@ export function QuoteItemRows() {
               step="0.01"
               min="0"
               placeholder="0,00"
+              defaultValue={row.value}
               required
               className="flex-1 sm:flex-none"
             />

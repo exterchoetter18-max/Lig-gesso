@@ -30,7 +30,15 @@ export default async function OrcamentoPage({
         <Link href="/documentos" className="text-sm font-medium text-foreground-muted hover:text-brand-orange">
           ← Voltar para Documentos
         </Link>
-        <PrintButton />
+        <div className="flex items-center gap-3">
+          <Link
+            href={`/orcamentos/${quote.id}/editar`}
+            className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground-muted hover:border-brand-orange hover:text-brand-orange"
+          >
+            Editar
+          </Link>
+          <PrintButton />
+        </div>
       </div>
 
       <div className="mx-auto flex max-w-3xl flex-col overflow-hidden bg-white shadow-lg print:flex-row print:shadow-none sm:flex-row">
@@ -75,19 +83,25 @@ export default async function OrcamentoPage({
 
         {/* Conteúdo */}
         <main className="flex-1 px-8 py-8">
-          <h1 className="mb-1 text-2xl font-bold text-foreground">
+          <h1 className="mb-6 text-2xl font-bold text-foreground">
             Orçamento de Prestação de Serviços
           </h1>
-          <p className="mb-6 text-sm text-foreground-muted">
-            Cliente: <span className="font-medium text-foreground">{quote.client.name}</span>
-            {" · "}
-            {formatDate(quote.createdAt)}
-          </p>
+
+          <div className="mb-6 flex flex-wrap gap-x-10 gap-y-2 text-sm">
+            <p>
+              <span className="font-semibold text-foreground">Nome: </span>
+              <span className="text-foreground">{quote.client.name}</span>
+            </p>
+            <p>
+              <span className="font-semibold text-foreground">Data: </span>
+              <span className="text-foreground">{formatDate(quote.createdAt)}</span>
+            </p>
+          </div>
 
           <table className="mb-6 w-full text-sm">
             <thead>
               <tr className="border-b-2 border-foreground text-left">
-                <th className="pb-2 font-semibold text-foreground">Descrição</th>
+                <th className="pb-2 font-semibold text-foreground">Serviço</th>
                 <th className="pb-2 text-right font-semibold text-foreground">Valor</th>
               </tr>
             </thead>
