@@ -45,8 +45,8 @@ Acesse http://localhost:3000. Login inicial:
 
 | Variável | Descrição |
 | --- | --- |
-| `DATABASE_URL` | Connection string do Supabase (pooler, porta 6543) |
-| `DIRECT_URL` | Connection string direta do Supabase (porta 5432), usada só pelo Prisma para migrations |
+| `DATABASE_URL` | Connection string do Supabase — **Transaction pooler, porta 6543**, com `?pgbouncer=true&connection_limit=5`. Não usar o Session pooler (porta 5432) aqui: ele tem um limite baixo e fixo de conexões simultâneas (15 no plano free) e derruba o site sob uso concorrente. |
+| `DIRECT_URL` | Connection string do Session pooler (porta 5432) — usada só pelo Prisma para `migrate`, onde não há problema de concorrência |
 | `SUPABASE_URL` | URL do projeto Supabase |
 | `SUPABASE_SERVICE_ROLE_KEY` | Chave secreta (service role) — só usada no servidor |
 | `SUPABASE_STORAGE_BUCKET` | Nome do bucket de documentos (padrão: `documentos`) |
