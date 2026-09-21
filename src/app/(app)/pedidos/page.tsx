@@ -103,6 +103,17 @@ export default async function PedidosPage() {
               <Field label="Orçamento (R$)">
                 <Input name="budget" type="number" step="0.01" min="0" />
               </Field>
+              <Field label="Valor de entrada (R$)">
+                <Input name="downPayment" type="number" step="0.01" min="0" />
+              </Field>
+              <Field label="Número de parcelas">
+                <Input
+                  name="installments"
+                  type="number"
+                  min="1"
+                  placeholder="Deixe em branco se à vista"
+                />
+              </Field>
               <Field label="Início">
                 <Input name="startDate" type="date" />
               </Field>

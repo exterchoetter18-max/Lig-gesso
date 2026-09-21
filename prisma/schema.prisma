@@ -47,6 +47,8 @@ model Project {
   startDate   DateTime?
   endDate     DateTime?
   budget      Float?
+  downPayment Float?
+  installments Int?
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 

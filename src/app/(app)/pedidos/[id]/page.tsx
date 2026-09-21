@@ -147,6 +147,36 @@ export default async function PedidoDetailPage({
             <h2 className="mb-3 text-sm font-semibold text-foreground">
               Financeiro da obra
             </h2>
+            {(project.budget || project.downPayment || project.installments) && (
+              <div className="mb-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-foreground-muted">
+                {project.budget != null && (
+                  <span>
+                    Orçamento: <strong className="text-foreground">{formatCurrency(project.budget)}</strong>
+                  </span>
+                )}
+                {project.downPayment != null && (
+                  <span>
+                    Entrada: <strong className="text-foreground">{formatCurrency(project.downPayment)}</strong>
+                  </span>
+                )}
+                {project.installments ? (
+                  <span>
+                    Parcelas:{" "}
+                    <strong className="text-foreground">
+                      {project.installments}x
+                      {project.budget != null &&
+                        ` de ${formatCurrency(
+                          (project.budget - (project.downPayment ?? 0)) / project.installments,
+                        )}`}
+                    </strong>
+                  </span>
+                ) : (
+                  <span>
+                    Pagamento: <strong className="text-foreground">À vista</strong>
+                  </span>
+                )}
+              </div>
+            )}
             <div className="mb-3 flex gap-4 text-sm">
               <span className="text-success">Entradas: {formatCurrency(totalEntradas)}</span>
               <span className="text-danger">Saídas: {formatCurrency(totalSaidas)}</span>
@@ -297,6 +327,24 @@ export default async function PedidoDetailPage({
                   step="0.01"
                   min="0"
                   defaultValue={project.budget ?? ""}
+                />
+              </Field>
+              <Field label="Valor de entrada (R$)">
+                <Input
+                  name="downPayment"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  defaultValue={project.downPayment ?? ""}
+                />
+              </Field>
+              <Field label="Número de parcelas">
+                <Input
+                  name="installments"
+                  type="number"
+                  min="1"
+                  placeholder="Deixe em branco se à vista"
+                  defaultValue={project.installments ?? ""}
                 />
               </Field>
               <Field label="Início">
