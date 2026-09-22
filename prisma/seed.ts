@@ -5,8 +5,8 @@ const prisma = new PrismaClient();
 
 async function main() {
   const owners = [
-    { name: "Sócio 1", email: "socio1@liggesso.com.br", password: "trocar123" },
-    { name: "Sócio 2", email: "socio2@liggesso.com.br", password: "trocar123" },
+    { name: "Suellen", email: "suellen@liggesso.com.br", password: "trocar123" },
+    { name: "Alisson", email: "alisson@liggesso.com.br", password: "trocar123" },
   ];
 
   for (const owner of owners) {

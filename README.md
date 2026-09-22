@@ -35,11 +35,10 @@ npm run dev
 
 Acesse http://localhost:3000. Login inicial:
 
-- `socio1@liggesso.com.br` / `trocar123`
-- `socio2@liggesso.com.br` / `trocar123`
+- `suellen@liggesso.com.br` / `trocar123`
+- `alisson@liggesso.com.br` / `trocar123`
 
-> Troque essas senhas assim que possível (ainda não há tela de troca de senha — pode ser
-> feito diretamente no banco ou pedir para eu adicionar essa tela).
+> Troque a senha em **Minha conta** (link na barra lateral) assim que possível.
 
 ## Variáveis de ambiente (`.env`)
 
