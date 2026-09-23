@@ -50,15 +50,13 @@ export default async function OrcamentoPage({
           </p>
 
           <div className="mb-8 border-t border-brand-border pt-4">
-            <p className="mb-2 text-xs font-semibold uppercase text-brand-text-muted">Proposta</p>
+            <p className="mb-2 text-sm font-semibold text-brand-text">Proposta</p>
             <p className="text-sm">Orçamento válido por {quote.validityDays} dias</p>
             <p className="text-sm">Prazo de entrega: {quote.deliveryTerm}</p>
           </div>
 
           <div className="mb-8 border-t border-brand-border pt-4">
-            <p className="mb-2 text-xs font-semibold uppercase text-brand-text-muted">
-              Forma de pagamento
-            </p>
+            <p className="mb-2 text-sm font-semibold text-brand-text">Forma de pagamento</p>
             <p className="text-sm">{COMPANY.payment.responsible}</p>
             <p className="text-sm">{COMPANY.payment.methods}</p>
             <p className="text-sm">PIX: {COMPANY.payment.pix}</p>
@@ -70,63 +68,69 @@ export default async function OrcamentoPage({
               Agência: {COMPANY.payment.agency}
               <br />
               Conta: {COMPANY.payment.account}
-              <br />
-              {COMPANY.cnpj}
             </p>
           </div>
 
           <div className="mt-auto border-t border-brand-border pt-4">
-            <p className="mb-1 text-xs font-semibold uppercase text-brand-text-muted">Contato</p>
+            <p className="mb-1 text-sm font-semibold text-brand-text">Contato</p>
             <p className="text-sm">{COMPANY.contactPhone}</p>
           </div>
         </aside>
 
         {/* Conteúdo */}
         <main className="flex-1 px-8 py-8">
-          <h1 className="mb-6 text-2xl font-bold text-foreground">
+          <h1 className="mb-8 text-2xl font-bold text-foreground">
             Orçamento de Prestação de Serviços
           </h1>
 
-          <div className="mb-6 flex flex-wrap gap-x-10 gap-y-2 text-sm">
-            <p>
-              <span className="font-semibold text-foreground">Nome: </span>
-              <span className="text-foreground">{quote.client.name}</span>
-            </p>
-            <p>
-              <span className="font-semibold text-foreground">Data: </span>
-              <span className="text-foreground">{formatDate(quote.createdAt)}</span>
-            </p>
+          <div className="mb-10 flex flex-wrap gap-x-10 gap-y-5">
+            <div className="min-w-[220px] flex-1">
+              <div className="flex items-baseline gap-2 border-b border-foreground pb-1">
+                <span className="shrink-0 text-sm text-foreground-muted">Nome:</span>
+                <span className="truncate font-semibold text-foreground">
+                  {quote.client.name}
+                </span>
+              </div>
+            </div>
+            <div className="min-w-[160px]">
+              <div className="flex items-baseline gap-2 border-b border-foreground pb-1">
+                <span className="shrink-0 text-sm text-foreground-muted">Data:</span>
+                <span className="font-semibold text-foreground">
+                  {formatDate(quote.createdAt)}
+                </span>
+              </div>
+            </div>
           </div>
 
-          <table className="mb-6 w-full text-sm">
-            <thead>
-              <tr className="border-b-2 border-foreground text-left">
-                <th className="pb-2 font-semibold text-foreground">Serviço</th>
-                <th className="pb-2 text-right font-semibold text-foreground">Valor</th>
-              </tr>
-            </thead>
-            <tbody>
-              {quote.items.map((item) => (
-                <tr key={item.id} className="border-b border-border">
-                  <td className="py-3 pr-4 text-foreground">{item.description}</td>
-                  <td className="py-3 text-right text-foreground">
-                    {formatCurrency(item.value)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-            <tfoot>
-              <tr className="border-t-2 border-foreground">
-                <td className="pt-3 font-bold text-foreground">Total</td>
-                <td className="pt-3 text-right font-bold text-foreground">
-                  {formatCurrency(total)}
-                </td>
-              </tr>
-            </tfoot>
-          </table>
+          <div className="mb-4 flex items-center justify-between gap-6">
+            <span className="text-xl font-bold text-foreground">Serviço</span>
+            <span className="w-32 shrink-0 text-right text-xl font-bold text-foreground">
+              Valor
+            </span>
+          </div>
+
+          <div className="flex flex-col gap-5">
+            {quote.items.map((item) => (
+              <div key={item.id} className="flex items-end justify-between gap-6">
+                <div className="min-w-0 flex-1 border-b border-foreground pb-1">
+                  <span className="text-foreground">{item.description}</span>
+                </div>
+                <div className="w-32 shrink-0 border-b border-foreground pb-1 text-right">
+                  <span className="text-foreground">{formatCurrency(item.value)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-8 flex items-center justify-between gap-6 border-t-2 border-foreground pt-4">
+            <span className="text-xl font-bold text-foreground">Total</span>
+            <span className="w-32 shrink-0 border-b border-foreground pb-1 text-right text-xl font-bold text-foreground">
+              {formatCurrency(total)}
+            </span>
+          </div>
 
           {quote.notes && (
-            <p className="mb-8 text-sm text-foreground-muted">{quote.notes}</p>
+            <p className="mt-6 text-sm text-foreground-muted">{quote.notes}</p>
           )}
 
           <div className="mt-16 grid grid-cols-2 gap-8 text-center text-sm">
