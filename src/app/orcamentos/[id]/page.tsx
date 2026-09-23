@@ -44,7 +44,7 @@ export default async function OrcamentoPage({
       <div className="mx-auto flex max-w-3xl flex-col overflow-hidden bg-white shadow-lg print:flex-row print:shadow-none sm:flex-row">
         {/* Sidebar */}
         <aside className="flex w-full shrink-0 flex-col bg-brand-bg px-6 py-8 text-brand-text print:w-64 print:text-brand-text sm:w-64">
-          <Logo showWordmark={false} className="mb-1" />
+          <Logo showWordmark={false} size="lg" className="mb-2" />
           <p className="mb-8 text-[11px] font-semibold uppercase leading-snug tracking-wide text-brand-text-muted">
             {COMPANY.name}
           </p>

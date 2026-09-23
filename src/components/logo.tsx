@@ -1,18 +1,24 @@
 type LogoProps = {
   className?: string;
   showWordmark?: boolean;
+  size?: "sm" | "lg";
+};
+
+const SIZE_CLASSES: Record<NonNullable<LogoProps["size"]>, string> = {
+  sm: "h-9 w-10",
+  lg: "h-16 w-[72px]",
 };
 
 /**
  * Monograma "LG" recriado a partir do print do site da Lig Gesso (laranja + swoosh
  * diagonal). Placeholder até o arquivo original da logo (PNG/SVG) ser enviado.
  */
-export function Logo({ className = "", showWordmark = true }: LogoProps) {
+export function Logo({ className = "", showWordmark = true, size = "sm" }: LogoProps) {
   return (
     <div className={`flex items-center gap-2.5 ${className}`}>
       <svg
         viewBox="0 0 64 56"
-        className="h-9 w-10 shrink-0"
+        className={`${SIZE_CLASSES[size]} shrink-0`}
         aria-hidden="true"
       >
         <defs>
