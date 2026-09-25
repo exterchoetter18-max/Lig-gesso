@@ -61,14 +61,14 @@ export default async function OrcamentoPage({
       </div>
 
       <div
-        className={`mx-auto flex min-h-[297mm] max-w-4xl flex-col overflow-hidden bg-white shadow-lg print:shadow-none sm:flex-row ${
+        className={`mx-auto flex min-h-[1000px] max-w-4xl flex-col overflow-hidden bg-white shadow-lg print:shadow-none sm:flex-row ${
           isLongQuote ? "print:!flex-col" : "print:!flex-row"
         }`}
       >
         {/* Sidebar */}
         <aside
-          className={`flex w-full shrink-0 flex-col bg-brand-bg px-7 py-10 text-brand-text sm:w-72 print:break-inside-avoid print:px-6 print:py-3 print:text-brand-text ${
-            isLongQuote ? "print:!w-full" : "print:!w-72"
+          className={`flex w-full shrink-0 flex-col bg-brand-bg px-6 py-10 text-brand-text sm:w-60 print:break-inside-avoid print:px-5 print:py-3 print:text-brand-text ${
+            isLongQuote ? "print:!w-full" : "print:!w-60"
           }`}
         >
           <Logo showWordmark={false} size="lg" className="mb-3 print:mb-1" />
