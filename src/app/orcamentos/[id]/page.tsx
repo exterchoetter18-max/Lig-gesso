@@ -41,9 +41,9 @@ export default async function OrcamentoPage({
         </div>
       </div>
 
-      <div className="mx-auto flex max-w-4xl flex-col overflow-hidden bg-white shadow-lg print:flex-row print:shadow-none sm:flex-row">
+      <div className="mx-auto flex max-w-4xl flex-col overflow-hidden bg-white shadow-lg print:overflow-visible print:shadow-none sm:flex-row">
         {/* Sidebar */}
-        <aside className="flex w-full shrink-0 flex-col bg-brand-bg px-7 py-10 text-brand-text print:w-72 print:text-brand-text sm:w-72">
+        <aside className="flex w-full shrink-0 flex-col bg-brand-bg px-7 py-10 text-brand-text print:fixed print:inset-y-0 print:left-0 print:h-screen print:w-72 print:text-brand-text sm:w-72">
           <Logo showWordmark={false} size="lg" className="mb-3" />
           <p className="mb-10 text-xs font-semibold uppercase leading-snug tracking-wide text-brand-text-muted">
             {COMPANY.name}
@@ -78,7 +78,7 @@ export default async function OrcamentoPage({
         </aside>
 
         {/* Conteúdo */}
-        <main className="flex-1 px-10 py-10">
+        <main className="flex-1 px-10 py-10 print:ml-72">
           <h1 className="mb-10 text-3xl font-bold text-foreground">
             Orçamento de Prestação de Serviços
           </h1>
@@ -102,7 +102,7 @@ export default async function OrcamentoPage({
             </div>
           </div>
 
-          <div className="mb-5 flex items-center justify-between gap-6">
+          <div className="mb-5 flex items-center justify-between gap-6 break-after-avoid">
             <span className="text-2xl font-bold text-foreground">Serviço</span>
             <span className="w-40 shrink-0 text-right text-2xl font-bold text-foreground">
               Valor
@@ -111,7 +111,10 @@ export default async function OrcamentoPage({
 
           <div className="flex flex-col gap-6">
             {quote.items.map((item) => (
-              <div key={item.id} className="flex items-end justify-between gap-6 text-lg">
+              <div
+                key={item.id}
+                className="flex items-end justify-between gap-6 break-inside-avoid text-lg"
+              >
                 <div className="min-w-0 flex-1 border-b border-foreground pb-2">
                   <span className="text-foreground">{item.description}</span>
                 </div>
@@ -122,7 +125,7 @@ export default async function OrcamentoPage({
             ))}
           </div>
 
-          <div className="mt-10 flex items-center justify-between gap-6 border-t-2 border-foreground pt-5">
+          <div className="mt-10 flex items-center justify-between gap-6 break-inside-avoid border-t-2 border-foreground pt-5">
             <span className="text-2xl font-bold text-foreground">Total</span>
             <span className="w-40 shrink-0 border-b border-foreground pb-2 text-right text-2xl font-bold text-foreground">
               {formatCurrency(total)}
@@ -133,7 +136,7 @@ export default async function OrcamentoPage({
             <p className="mt-8 text-base text-foreground-muted">{quote.notes}</p>
           )}
 
-          <div className="mt-20 grid grid-cols-2 gap-10 text-center text-base">
+          <div className="mt-20 grid grid-cols-2 gap-10 break-inside-avoid text-center text-base">
             <div>
               <div className="mb-3 border-t border-foreground" />
               <p className="text-foreground-muted">{quote.client.name}</p>
