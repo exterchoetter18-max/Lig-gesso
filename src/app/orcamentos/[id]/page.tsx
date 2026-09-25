@@ -35,6 +35,12 @@ export default async function OrcamentoPage({
     totalDescriptionChars > 500 ||
     (quote.notes?.length ?? 0) > 200;
 
+  // Preenche com linhas em branco até um mínimo de linhas, para a folha
+  // ficar com a cara de um formulário impresso (como o modelo da marca),
+  // em vez de um cartão curto com espaço em branco sobrando embaixo.
+  const MIN_ROWS = 8;
+  const blankRowCount = Math.max(0, MIN_ROWS - quote.items.length);
+
   return (
     <div className="min-h-screen bg-surface-muted print:bg-white">
       <style>{`@page { size: A4; margin: 0; }`}</style>
@@ -55,7 +61,7 @@ export default async function OrcamentoPage({
       </div>
 
       <div
-        className={`mx-auto flex max-w-4xl flex-col overflow-hidden bg-white shadow-lg print:shadow-none sm:flex-row ${
+        className={`mx-auto flex min-h-[297mm] max-w-4xl flex-col overflow-hidden bg-white shadow-lg print:shadow-none sm:flex-row ${
           isLongQuote ? "print:!flex-col" : "print:!flex-row"
         }`}
       >
@@ -141,6 +147,20 @@ export default async function OrcamentoPage({
                 </div>
                 <div className="w-40 shrink-0 border-b border-foreground pb-2 text-right print:pb-1">
                   <span className="text-foreground">{formatCurrency(item.value)}</span>
+                </div>
+              </div>
+            ))}
+            {Array.from({ length: blankRowCount }).map((_, i) => (
+              <div
+                key={`blank-${i}`}
+                aria-hidden
+                className="flex items-end justify-between gap-6 break-inside-avoid text-lg print:text-sm"
+              >
+                <div className="min-w-0 flex-1 border-b border-foreground/40 pb-2 print:pb-1">
+                  &nbsp;
+                </div>
+                <div className="w-40 shrink-0 border-b border-foreground/40 pb-2 text-right print:pb-1">
+                  &nbsp;
                 </div>
               </div>
             ))}
