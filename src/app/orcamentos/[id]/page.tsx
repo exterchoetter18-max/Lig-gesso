@@ -105,13 +105,13 @@ export default async function OrcamentoPage({
         </aside>
 
         {/* Conteúdo */}
-        <main className="flex-1 px-10 py-10 print:px-8 print:py-3">
+        <main className="min-w-0 flex-1 px-10 py-10 print:px-8 print:py-3">
           <h1 className="mb-10 text-3xl font-bold text-foreground print:mb-3 print:text-xl">
             Orçamento de Prestação de Serviços
           </h1>
 
-          <div className="mb-12 flex flex-wrap gap-x-12 gap-y-6 text-base print:mb-3 print:gap-y-2">
-            <div className="min-w-[240px] flex-1">
+          <div className="mb-12 flex items-start gap-6 text-base print:mb-3">
+            <div className="min-w-0 flex-1">
               <div className="flex items-baseline gap-2 border-b border-foreground pb-2 print:pb-1">
                 <span className="shrink-0 text-foreground-muted">Nome:</span>
                 <span className="truncate text-lg font-semibold text-foreground print:text-base">
@@ -119,10 +119,10 @@ export default async function OrcamentoPage({
                 </span>
               </div>
             </div>
-            <div className="min-w-[180px]">
+            <div className="shrink-0">
               <div className="flex items-baseline gap-2 border-b border-foreground pb-2 print:pb-1">
                 <span className="shrink-0 text-foreground-muted">Data:</span>
-                <span className="text-lg font-semibold text-foreground print:text-base">
+                <span className="whitespace-nowrap text-lg font-semibold text-foreground print:text-base">
                   {formatDate(quote.createdAt)}
                 </span>
               </div>
