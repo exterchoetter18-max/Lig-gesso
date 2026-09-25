@@ -22,6 +22,19 @@ export default async function OrcamentoPage({
 
   const total = quote.items.reduce((sum, item) => sum + item.value, 0);
 
+  // Lado a lado (padrão, igual ao modelo da marca) só é seguro quando cabe
+  // numa página só — em orçamentos muito longos, a barra lateral vira um
+  // bloco quebrado ao imprimir. Nesse caso raro, cai para a barra empilhada
+  // em cima do conteúdo, que sempre pagina corretamente.
+  const totalDescriptionChars = quote.items.reduce(
+    (sum, item) => sum + item.description.length,
+    0,
+  );
+  const isLongQuote =
+    quote.items.length > 5 ||
+    totalDescriptionChars > 500 ||
+    (quote.notes?.length ?? 0) > 200;
+
   return (
     <div className="min-h-screen bg-surface-muted print:bg-white">
       <style>{`@page { size: A4; margin: 0; }`}</style>
@@ -41,9 +54,17 @@ export default async function OrcamentoPage({
         </div>
       </div>
 
-      <div className="mx-auto flex max-w-4xl flex-col overflow-hidden bg-white shadow-lg print:shadow-none sm:flex-row print:!flex-col">
+      <div
+        className={`mx-auto flex max-w-4xl flex-col overflow-hidden bg-white shadow-lg print:shadow-none sm:flex-row ${
+          isLongQuote ? "print:!flex-col" : "print:!flex-row"
+        }`}
+      >
         {/* Sidebar */}
-        <aside className="flex w-full shrink-0 flex-col bg-brand-bg px-7 py-10 text-brand-text sm:w-72 print:!w-full print:break-inside-avoid print:px-6 print:py-3 print:text-brand-text">
+        <aside
+          className={`flex w-full shrink-0 flex-col bg-brand-bg px-7 py-10 text-brand-text sm:w-72 print:break-inside-avoid print:px-6 print:py-3 print:text-brand-text ${
+            isLongQuote ? "print:!w-full" : "print:!w-72"
+          }`}
+        >
           <Logo showWordmark={false} size="lg" className="mb-3 print:mb-1" />
           <p className="mb-10 text-xs font-semibold uppercase leading-snug tracking-wide text-brand-text-muted print:mb-2">
             {COMPANY.name}
