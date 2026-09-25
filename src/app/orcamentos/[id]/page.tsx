@@ -38,7 +38,11 @@ export default async function OrcamentoPage({
   // Preenche com linhas em branco até um mínimo de linhas, para a folha
   // ficar com a cara de um formulário impresso (como o modelo da marca),
   // em vez de um cartão curto com espaço em branco sobrando embaixo.
-  const MIN_ROWS = 8;
+  // Mantido conservador de propósito: cada linha extra reduz a margem de
+  // segurança até o limite de uma página, e alguns navegadores (Safari do
+  // iPhone, por exemplo) reservam espaço próprio para cabeçalho/rodapé de
+  // impressão que não dá pra prever aqui.
+  const MIN_ROWS = 6;
   const blankRowCount = Math.max(0, MIN_ROWS - quote.items.length);
 
   return (
@@ -61,7 +65,7 @@ export default async function OrcamentoPage({
       </div>
 
       <div
-        className={`mx-auto flex min-h-[1000px] max-w-4xl flex-col overflow-hidden bg-white shadow-lg print:shadow-none sm:flex-row ${
+        className={`mx-auto flex min-h-[820px] max-w-4xl flex-col overflow-hidden bg-white shadow-lg print:shadow-none sm:flex-row ${
           isLongQuote ? "print:!flex-col" : "print:!flex-row"
         }`}
       >
