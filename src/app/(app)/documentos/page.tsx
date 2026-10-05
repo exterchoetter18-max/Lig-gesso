@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { createDocument, deleteDocument } from "@/lib/actions/documents";
 import { deleteQuote } from "@/lib/actions/quotes";
 import { formatCurrency, formatDate, formatFileSize } from "@/lib/format";
+import { quoteTotals } from "@/lib/quotes";
 import {
   PageHeader,
   Card,
@@ -51,7 +52,7 @@ export default async function DocumentosPage() {
             ) : (
               <ul className="flex flex-col gap-2">
                 {quotes.map((quote) => {
-                  const total = quote.items.reduce((sum, item) => sum + item.value, 0);
+                  const { total } = quoteTotals(quote);
                   return (
                     <li
                       key={quote.id}

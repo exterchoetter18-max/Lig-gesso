@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { formatCurrency, formatDate } from "@/lib/format";
+import { quoteTotals } from "@/lib/quotes";
 import { COMPANY } from "@/lib/company";
 import { Logo } from "@/components/logo";
 import { PrintButton } from "@/components/print-button";
@@ -20,7 +21,7 @@ export default async function OrcamentoPage({
 
   if (!quote) notFound();
 
-  const total = quote.items.reduce((sum, item) => sum + item.value, 0);
+  const { subtotal, discount, total } = quoteTotals(quote);
 
   // Lado a lado (padrão, igual ao modelo da marca) só é seguro quando cabe
   // numa página só — em orçamentos muito longos, a barra lateral vira um
@@ -43,7 +44,11 @@ export default async function OrcamentoPage({
   // iPhone, por exemplo) reservam espaço próprio para cabeçalho/rodapé de
   // impressão que não dá pra prever aqui.
   const MIN_ROWS = 6;
-  const blankRowCount = Math.max(0, MIN_ROWS - quote.items.length);
+  // As linhas de Subtotal e Desconto ocupam o espaço de uma linha em branco.
+  const blankRowCount = Math.max(
+    0,
+    MIN_ROWS - quote.items.length - (discount > 0 ? 1 : 0),
+  );
 
   return (
     <div className="min-h-screen bg-surface-muted print:bg-white">
@@ -170,11 +175,33 @@ export default async function OrcamentoPage({
             ))}
           </div>
 
-          <div className="mt-10 flex items-center justify-between gap-6 break-inside-avoid border-t-2 border-foreground pt-5 print:mt-2 print:pt-2">
-            <span className="text-2xl font-bold text-foreground print:text-lg">Total</span>
-            <span className="w-40 shrink-0 border-b border-foreground pb-2 text-right text-2xl font-bold text-foreground print:pb-1 print:text-lg">
-              {formatCurrency(total)}
-            </span>
+          <div className="mt-10 break-inside-avoid border-t-2 border-foreground pt-5 print:mt-2 print:pt-2">
+            {discount > 0 && (
+              <div className="mb-4 flex flex-col gap-1 text-lg print:mb-1 print:gap-0 print:text-sm">
+                <div className="flex items-center justify-between gap-6">
+                  <span className="text-foreground-muted">Subtotal</span>
+                  <span className="w-40 shrink-0 text-right text-foreground">
+                    {formatCurrency(subtotal)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-6">
+                  <span className="text-foreground-muted">
+                    Desconto
+                    {quote.discountType === "PERCENTUAL" &&
+                      ` (${quote.discount.toLocaleString("pt-BR")}%)`}
+                  </span>
+                  <span className="w-40 shrink-0 text-right text-foreground">
+                    − {formatCurrency(discount)}
+                  </span>
+                </div>
+              </div>
+            )}
+            <div className="flex items-center justify-between gap-6">
+              <span className="text-2xl font-bold text-foreground print:text-lg">Total</span>
+              <span className="w-40 shrink-0 border-b border-foreground pb-2 text-right text-2xl font-bold text-foreground print:pb-1 print:text-lg">
+                {formatCurrency(total)}
+              </span>
+            </div>
           </div>
 
           {quote.notes && (

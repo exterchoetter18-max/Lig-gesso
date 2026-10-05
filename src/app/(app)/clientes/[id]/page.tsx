@@ -8,6 +8,7 @@ import {
   PROJECT_STATUS_LABEL,
   PROJECT_STATUS_TONE,
 } from "@/lib/format";
+import { quoteTotals } from "@/lib/quotes";
 import {
   PageHeader,
   Card,
@@ -88,7 +89,7 @@ export default async function ClienteDetailPage({
             ) : (
               <ul className="flex flex-col gap-2">
                 {client.quotes.map((quote) => {
-                  const total = quote.items.reduce((sum, item) => sum + item.value, 0);
+                  const { total } = quoteTotals(quote);
                   return (
                     <li key={quote.id}>
                       <a

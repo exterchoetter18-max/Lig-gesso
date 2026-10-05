@@ -21,6 +21,8 @@ export function QuoteForm({
     validityDays: number;
     deliveryTerm: string;
     notes: string | null;
+    discount: number;
+    discountType: "VALOR" | "PERCENTUAL";
     items: { description: string; value: number }[];
   };
 }) {
@@ -55,6 +57,25 @@ export function QuoteForm({
         <Field label="Itens do orçamento *">
           <QuoteItemRows initialItems={defaultValues?.items} />
         </Field>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Desconto (opcional)">
+            <Input
+              name="discount"
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="0,00"
+              defaultValue={defaultValues?.discount || ""}
+            />
+          </Field>
+          <Field label="Tipo de desconto">
+            <Select name="discountType" defaultValue={defaultValues?.discountType ?? "VALOR"}>
+              <option value="VALOR">Valor (R$)</option>
+              <option value="PERCENTUAL">Porcentagem (%)</option>
+            </Select>
+          </Field>
+        </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Validade (dias)">

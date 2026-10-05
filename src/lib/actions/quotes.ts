@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import type { DiscountType } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
 function parseQuoteFields(formData: FormData) {
@@ -11,6 +12,12 @@ function parseQuoteFields(formData: FormData) {
   const deliveryTerm =
     String(formData.get("deliveryTerm") ?? "").trim() || "A combinar";
   const notes = String(formData.get("notes") ?? "").trim() || null;
+
+  const discountType: DiscountType =
+    formData.get("discountType") === "PERCENTUAL" ? "PERCENTUAL" : "VALOR";
+  const rawDiscount = Math.max(Number(formData.get("discount") ?? 0) || 0, 0);
+  const discount =
+    discountType === "PERCENTUAL" ? Math.min(rawDiscount, 100) : rawDiscount;
 
   const descriptions = formData.getAll("itemDescription").map(String);
   const values = formData.getAll("itemValue").map(String);
@@ -22,22 +29,26 @@ function parseQuoteFields(formData: FormData) {
     }))
     .filter((item) => item.description && item.value > 0);
 
-  return { clientId, projectId, validityDays, deliveryTerm, notes, items };
+  return {
+    clientId,
+    projectId,
+    validityDays,
+    deliveryTerm,
+    notes,
+    discount,
+    discountType,
+    items,
+  };
 }
 
 export async function createQuote(formData: FormData) {
-  const { clientId, projectId, validityDays, deliveryTerm, notes, items } =
-    parseQuoteFields(formData);
+  const { items, ...fields } = parseQuoteFields(formData);
 
-  if (!clientId || items.length === 0) return;
+  if (!fields.clientId || items.length === 0) return;
 
   const quote = await prisma.quote.create({
     data: {
-      clientId,
-      projectId,
-      validityDays,
-      deliveryTerm,
-      notes,
+      ...fields,
       items: {
         create: items.map((item, order) => ({ ...item, order })),
       },
@@ -49,21 +60,16 @@ export async function createQuote(formData: FormData) {
 }
 
 export async function updateQuote(id: string, formData: FormData) {
-  const { clientId, projectId, validityDays, deliveryTerm, notes, items } =
-    parseQuoteFields(formData);
+  const { items, ...fields } = parseQuoteFields(formData);
 
-  if (!clientId || items.length === 0) return;
+  if (!fields.clientId || items.length === 0) return;
 
   await prisma.$transaction([
     prisma.quoteItem.deleteMany({ where: { quoteId: id } }),
     prisma.quote.update({
       where: { id },
       data: {
-        clientId,
-        projectId,
-        validityDays,
-        deliveryTerm,
-        notes,
+        ...fields,
         items: {
           create: items.map((item, order) => ({ ...item, order })),
         },

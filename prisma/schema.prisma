@@ -128,12 +128,19 @@ model Appointment {
   project   Project? @relation(fields: [projectId], references: [id])
 }
 
+enum DiscountType {
+  VALOR
+  PERCENTUAL
+}
+
 model Quote {
-  id            String   @id @default(cuid())
-  validityDays  Int      @default(30)
-  deliveryTerm  String   @default("A combinar")
+  id            String       @id @default(cuid())
+  validityDays  Int          @default(30)
+  deliveryTerm  String       @default("A combinar")
   notes         String?
-  createdAt     DateTime @default(now())
+  discount      Float        @default(0)
+  discountType  DiscountType @default(VALOR)
+  createdAt     DateTime     @default(now())
 
   clientId String
   client   Client @relation(fields: [clientId], references: [id])

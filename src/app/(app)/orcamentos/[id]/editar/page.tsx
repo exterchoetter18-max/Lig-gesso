@@ -40,6 +40,8 @@ export default async function EditarOrcamentoPage({
           validityDays: quote.validityDays,
           deliveryTerm: quote.deliveryTerm,
           notes: quote.notes,
+          discount: quote.discount,
+          discountType: quote.discountType,
           items: quote.items.map((i) => ({ description: i.description, value: i.value })),
         }}
       />
