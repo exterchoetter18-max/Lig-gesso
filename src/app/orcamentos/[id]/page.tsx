@@ -119,7 +119,11 @@ export default async function OrcamentoPage({
             Orçamento de Prestação de Serviços
           </h1>
 
-          <div className="mb-12 flex items-start gap-6 text-base print:mb-3">
+          <div
+            className={`flex items-start gap-6 text-base ${
+              quote.client.document ? "mb-4 print:mb-2" : "mb-12 print:mb-3"
+            }`}
+          >
             <div className="min-w-0 flex-1">
               <div className="flex items-baseline gap-2 border-b border-foreground pb-2 print:pb-1">
                 <span className="shrink-0 text-foreground-muted">Nome:</span>
@@ -137,6 +141,15 @@ export default async function OrcamentoPage({
               </div>
             </div>
           </div>
+
+          {quote.client.document && (
+            <div className="mb-12 flex items-baseline gap-2 border-b border-foreground pb-2 text-base print:mb-3 print:pb-1">
+              <span className="shrink-0 text-foreground-muted">CPF / CNPJ:</span>
+              <span className="truncate text-lg font-semibold text-foreground print:text-base">
+                {quote.client.document}
+              </span>
+            </div>
+          )}
 
           <div className="mb-5 flex items-center justify-between gap-6 break-after-avoid print:mb-2">
             <span className="text-2xl font-bold text-foreground print:text-lg">Serviço</span>

@@ -143,8 +143,11 @@ export default async function ClienteDetailPage({
             Editar dados
           </h2>
           <form action={updateClientWithId} className="flex flex-col gap-3">
-            <Field label="Nome *">
+            <Field label="Nome / Razão social *">
               <Input name="name" defaultValue={client.name} required />
+            </Field>
+            <Field label="CPF / CNPJ">
+              <Input name="document" defaultValue={client.document ?? ""} />
             </Field>
             <Field label="Telefone / WhatsApp">
               <Input name="phone" defaultValue={client.phone ?? ""} />

@@ -33,7 +33,7 @@ export default async function ClientesPage() {
             <Table>
               <thead className="bg-surface-muted text-left text-xs font-semibold uppercase text-foreground-muted">
                 <tr>
-                  <th className="px-4 py-3">Nome</th>
+                  <th className="px-4 py-3">Nome / Razão social</th>
                   <th className="px-4 py-3">Contato</th>
                   <th className="px-4 py-3">Obras</th>
                 </tr>
@@ -48,6 +48,11 @@ export default async function ClientesPage() {
                       >
                         {client.name}
                       </Link>
+                      {client.document && (
+                        <p className="text-xs text-foreground-muted">
+                          {client.document}
+                        </p>
+                      )}
                     </td>
                     <td className="px-4 py-3 text-foreground-muted">
                       {client.phone || client.email || "—"}
@@ -67,8 +72,11 @@ export default async function ClientesPage() {
             Novo cliente
           </h2>
           <form action={createClient} className="flex flex-col gap-3">
-            <Field label="Nome *">
+            <Field label="Nome / Razão social *">
               <Input name="name" required />
+            </Field>
+            <Field label="CPF / CNPJ">
+              <Input name="document" />
             </Field>
             <Field label="Telefone / WhatsApp">
               <Input name="phone" />

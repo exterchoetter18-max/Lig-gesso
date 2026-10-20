@@ -11,6 +11,7 @@ export async function createClient(formData: FormData) {
   await prisma.client.create({
     data: {
       name,
+      document: String(formData.get("document") ?? "").trim() || null,
       phone: String(formData.get("phone") ?? "").trim() || null,
       email: String(formData.get("email") ?? "").trim() || null,
       address: String(formData.get("address") ?? "").trim() || null,
@@ -29,6 +30,7 @@ export async function updateClient(id: string, formData: FormData) {
     where: { id },
     data: {
       name,
+      document: String(formData.get("document") ?? "").trim() || null,
       phone: String(formData.get("phone") ?? "").trim() || null,
       email: String(formData.get("email") ?? "").trim() || null,
       address: String(formData.get("address") ?? "").trim() || null,
