@@ -14,4 +14,11 @@ export const COMPANY = {
     account: "236814613",
   },
   cnpj: "46.670.954/0001-02",
+  contract: {
+    name: "LIG GESSO",
+    legalType: "microempreendedor individual",
+    address: "Rua José da Cruz, 435 – Forquilhas – São José - CEP 88107-488",
+    representative: "Alyson Oliveira da Silva",
+    city: "São José/SC",
+  },
 };

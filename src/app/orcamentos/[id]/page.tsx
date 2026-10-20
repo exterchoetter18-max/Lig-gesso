@@ -1,10 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { formatCurrency, formatDate } from "@/lib/format";
-import { quoteTotals } from "@/lib/quotes";
-import { COMPANY } from "@/lib/company";
-import { Logo } from "@/components/logo";
+import { QuoteSheet } from "@/components/quote-sheet";
 import { PrintButton } from "@/components/print-button";
 
 export default async function OrcamentoPage({
@@ -16,39 +13,14 @@ export default async function OrcamentoPage({
 
   const quote = await prisma.quote.findUnique({
     where: { id },
-    include: { client: true, items: { orderBy: { order: "asc" } } },
+    include: {
+      client: true,
+      items: { orderBy: { order: "asc" } },
+      contract: { select: { id: true } },
+    },
   });
 
   if (!quote) notFound();
-
-  const { subtotal, discount, total } = quoteTotals(quote);
-
-  // Lado a lado (padrão, igual ao modelo da marca) só é seguro quando cabe
-  // numa página só — em orçamentos muito longos, a barra lateral vira um
-  // bloco quebrado ao imprimir. Nesse caso raro, cai para a barra empilhada
-  // em cima do conteúdo, que sempre pagina corretamente.
-  const totalDescriptionChars = quote.items.reduce(
-    (sum, item) => sum + item.description.length,
-    0,
-  );
-  const isLongQuote =
-    quote.items.length > 5 ||
-    totalDescriptionChars > 500 ||
-    (quote.notes?.length ?? 0) > 200;
-
-  // Preenche com linhas em branco até um mínimo de linhas, para a folha
-  // ficar com a cara de um formulário impresso (como o modelo da marca),
-  // em vez de um cartão curto com espaço em branco sobrando embaixo.
-  // Mantido conservador de propósito: cada linha extra reduz a margem de
-  // segurança até o limite de uma página, e alguns navegadores (Safari do
-  // iPhone, por exemplo) reservam espaço próprio para cabeçalho/rodapé de
-  // impressão que não dá pra prever aqui.
-  const MIN_ROWS = 6;
-  // As linhas de Subtotal e Desconto ocupam o espaço de uma linha em branco.
-  const blankRowCount = Math.max(
-    0,
-    MIN_ROWS - quote.items.length - (discount > 0 ? 1 : 0),
-  );
 
   return (
     <div className="min-h-screen bg-surface-muted print:bg-white">
@@ -65,175 +37,21 @@ export default async function OrcamentoPage({
           >
             Editar
           </Link>
+          <Link
+            href={
+              quote.contract
+                ? `/contratos/${quote.contract.id}`
+                : `/contratos/novo?orcamento=${quote.id}`
+            }
+            className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground-muted hover:border-brand-orange hover:text-brand-orange"
+          >
+            {quote.contract ? "Ver contrato" : "Gerar contrato"}
+          </Link>
           <PrintButton />
         </div>
       </div>
 
-      <div
-        className={`mx-auto flex min-h-[820px] max-w-4xl flex-col overflow-hidden bg-white shadow-lg print:shadow-none sm:flex-row ${
-          isLongQuote ? "print:!flex-col" : "print:!flex-row"
-        }`}
-      >
-        {/* Sidebar */}
-        <aside
-          className={`flex w-full shrink-0 flex-col bg-brand-bg px-6 py-10 text-brand-text sm:w-60 print:break-inside-avoid print:px-5 print:py-3 print:text-brand-text ${
-            isLongQuote ? "print:!w-full" : "print:!w-60"
-          }`}
-        >
-          <Logo showWordmark={false} size="lg" className="mb-3 print:mb-1" />
-          <p className="mb-10 text-xs font-semibold uppercase leading-snug tracking-wide text-brand-text-muted print:mb-2">
-            {COMPANY.name}
-          </p>
-
-          <div className="mb-10 border-t border-brand-border pt-5 print:mb-2 print:pt-2 print:text-sm">
-            <p className="mb-2 text-base font-semibold text-brand-text print:mb-1 print:text-sm">Proposta</p>
-            <p className="text-base print:text-sm">Orçamento válido por {quote.validityDays} dias</p>
-            <p className="text-base print:text-sm">Prazo de entrega: {quote.deliveryTerm}</p>
-          </div>
-
-          <div className="mb-10 border-t border-brand-border pt-5 print:mb-2 print:pt-2 print:text-sm">
-            <p className="mb-2 text-base font-semibold text-brand-text print:mb-1 print:text-sm">Forma de pagamento</p>
-            <p className="text-base print:text-sm">{COMPANY.payment.responsible}</p>
-            <p className="text-base print:text-sm">{COMPANY.payment.methods}</p>
-            <p className="text-base print:text-sm">PIX: {COMPANY.payment.pix}</p>
-            <p className="mt-2 text-sm text-brand-text-muted print:mt-1 print:text-xs">
-              Dados da conta jurídica
-              <br />
-              Banco: {COMPANY.payment.bank}
-              <br />
-              Agência: {COMPANY.payment.agency}
-              <br />
-              Conta: {COMPANY.payment.account}
-            </p>
-          </div>
-
-          <div className="mt-auto border-t border-brand-border pt-5 print:pt-2 print:text-sm">
-            <p className="mb-1 text-base font-semibold text-brand-text print:text-sm">Contato</p>
-            <p className="text-base print:text-sm">{COMPANY.contactPhone}</p>
-          </div>
-        </aside>
-
-        {/* Conteúdo */}
-        <main className="min-w-0 flex-1 px-10 py-10 print:px-8 print:py-3">
-          <h1 className="mb-10 text-3xl font-bold text-foreground print:mb-3 print:text-xl">
-            Orçamento de Prestação de Serviços
-          </h1>
-
-          <div
-            className={`flex items-start gap-6 text-base ${
-              quote.client.document ? "mb-4 print:mb-2" : "mb-12 print:mb-3"
-            }`}
-          >
-            <div className="min-w-0 flex-1">
-              <div className="flex items-baseline gap-2 border-b border-foreground pb-2 print:pb-1">
-                <span className="shrink-0 text-foreground-muted">Nome:</span>
-                <span className="truncate text-lg font-semibold text-foreground print:text-base">
-                  {quote.client.name}
-                </span>
-              </div>
-            </div>
-            <div className="shrink-0">
-              <div className="flex items-baseline gap-2 border-b border-foreground pb-2 print:pb-1">
-                <span className="shrink-0 text-foreground-muted">Data:</span>
-                <span className="whitespace-nowrap text-lg font-semibold text-foreground print:text-base">
-                  {formatDate(quote.createdAt)}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {quote.client.document && (
-            <div className="mb-12 flex items-baseline gap-2 border-b border-foreground pb-2 text-base print:mb-3 print:pb-1">
-              <span className="shrink-0 text-foreground-muted">CPF / CNPJ:</span>
-              <span className="truncate text-lg font-semibold text-foreground print:text-base">
-                {quote.client.document}
-              </span>
-            </div>
-          )}
-
-          <div className="mb-5 flex items-center justify-between gap-6 break-after-avoid print:mb-2">
-            <span className="text-2xl font-bold text-foreground print:text-lg">Serviço</span>
-            <span className="w-40 shrink-0 text-right text-2xl font-bold text-foreground print:text-lg">
-              Valor
-            </span>
-          </div>
-
-          <div className="flex flex-col gap-6 print:gap-2">
-            {quote.items.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-end justify-between gap-6 break-inside-avoid text-lg print:text-sm"
-              >
-                <div className="min-w-0 flex-1 border-b border-foreground pb-2 print:pb-1">
-                  <span className="text-foreground">{item.description}</span>
-                </div>
-                <div className="w-40 shrink-0 border-b border-foreground pb-2 text-right print:pb-1">
-                  <span className="text-foreground">{formatCurrency(item.value)}</span>
-                </div>
-              </div>
-            ))}
-            {Array.from({ length: blankRowCount }).map((_, i) => (
-              <div
-                key={`blank-${i}`}
-                aria-hidden
-                className="flex items-end justify-between gap-6 break-inside-avoid text-lg print:text-sm"
-              >
-                <div className="min-w-0 flex-1 border-b border-foreground/40 pb-2 print:pb-1">
-                  &nbsp;
-                </div>
-                <div className="w-40 shrink-0 border-b border-foreground/40 pb-2 text-right print:pb-1">
-                  &nbsp;
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-10 break-inside-avoid border-t-2 border-foreground pt-5 print:mt-2 print:pt-2">
-            {discount > 0 && (
-              <div className="mb-4 flex flex-col gap-1 text-lg print:mb-1 print:gap-0 print:text-sm">
-                <div className="flex items-center justify-between gap-6">
-                  <span className="text-foreground-muted">Subtotal</span>
-                  <span className="w-40 shrink-0 text-right text-foreground">
-                    {formatCurrency(subtotal)}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between gap-6">
-                  <span className="text-foreground-muted">
-                    Desconto
-                    {quote.discountType === "PERCENTUAL" &&
-                      ` (${quote.discount.toLocaleString("pt-BR")}%)`}
-                  </span>
-                  <span className="w-40 shrink-0 text-right text-foreground">
-                    − {formatCurrency(discount)}
-                  </span>
-                </div>
-              </div>
-            )}
-            <div className="flex items-center justify-between gap-6">
-              <span className="text-2xl font-bold text-foreground print:text-lg">Total</span>
-              <span className="w-40 shrink-0 border-b border-foreground pb-2 text-right text-2xl font-bold text-foreground print:pb-1 print:text-lg">
-                {formatCurrency(total)}
-              </span>
-            </div>
-          </div>
-
-          {quote.notes && (
-            <p className="mt-8 text-base text-foreground-muted print:mt-3 print:text-sm">{quote.notes}</p>
-          )}
-
-          <div className="mt-20 grid grid-cols-2 gap-10 break-inside-avoid text-center text-base print:mt-6 print:text-sm">
-            <div>
-              <div className="mb-3 border-t border-foreground print:mb-1" />
-              <p className="text-foreground-muted">{quote.client.name}</p>
-            </div>
-            <div>
-              <div className="mb-3 border-t border-foreground print:mb-1" />
-              <p className="font-medium text-foreground">{COMPANY.name}</p>
-              <p className="text-sm text-foreground-muted">{COMPANY.cnpj}</p>
-            </div>
-          </div>
-        </main>
-      </div>
+      <QuoteSheet quote={quote} />
     </div>
   );
 }

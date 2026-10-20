@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { createDocument, deleteDocument } from "@/lib/actions/documents";
 import { deleteQuote } from "@/lib/actions/quotes";
+import { deleteContract } from "@/lib/actions/contracts";
 import { formatCurrency, formatDate, formatFileSize } from "@/lib/format";
 import { quoteTotals } from "@/lib/quotes";
 import {
@@ -15,14 +16,18 @@ import {
 } from "@/components/ui";
 
 export default async function DocumentosPage() {
-  const [documents, quotes, clients, projects] = await Promise.all([
+  const [documents, quotes, contracts, clients, projects] = await Promise.all([
     prisma.document.findMany({
       orderBy: { uploadedAt: "desc" },
       include: { client: true, project: true },
     }),
     prisma.quote.findMany({
       orderBy: { createdAt: "desc" },
-      include: { client: true, items: true },
+      include: { client: true, items: true, contract: { select: { id: true } } },
+    }),
+    prisma.contract.findMany({
+      orderBy: { date: "desc" },
+      include: { quote: { include: { client: true, items: true } } },
     }),
     prisma.client.findMany({ orderBy: { name: "asc" } }),
     prisma.project.findMany({ orderBy: { title: "asc" } }),
@@ -72,6 +77,23 @@ export default async function DocumentosPage() {
                         </span>
                       </a>
                       <div className="flex shrink-0 items-center gap-2">
+                        {quote.contract ? (
+                          <a
+                            href={`/contratos/${quote.contract.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="rounded-lg border border-border px-2 py-1 text-xs font-medium text-foreground-muted hover:border-brand-orange hover:text-brand-orange"
+                          >
+                            Ver contrato
+                          </a>
+                        ) : (
+                          <Link
+                            href={`/contratos/novo?orcamento=${quote.id}`}
+                            className="rounded-lg border border-border px-2 py-1 text-xs font-medium text-foreground-muted hover:border-brand-orange hover:text-brand-orange"
+                          >
+                            Gerar contrato
+                          </Link>
+                        )}
                         <Link
                           href={`/orcamentos/${quote.id}/editar`}
                           className="rounded-lg border border-border px-2 py-1 text-xs font-medium text-foreground-muted hover:border-brand-orange hover:text-brand-orange"
@@ -79,6 +101,52 @@ export default async function DocumentosPage() {
                           Editar
                         </Link>
                         <form action={deleteQuote.bind(null, quote.id)}>
+                          <Button type="submit" variant="danger" className="px-2 py-1 text-xs">
+                            Excluir
+                          </Button>
+                        </form>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </Card>
+
+          <Card>
+            <h2 className="mb-3 text-sm font-semibold text-foreground">Contratos</h2>
+            {contracts.length === 0 ? (
+              <EmptyState message="Nenhum contrato gerado ainda. Use “Gerar contrato” em um orçamento." />
+            ) : (
+              <ul className="flex flex-col gap-2">
+                {contracts.map((contract) => {
+                  const { total } = quoteTotals(contract.quote);
+                  return (
+                    <li
+                      key={contract.id}
+                      className="flex items-center justify-between rounded-lg border border-border px-3 py-2 text-sm"
+                    >
+                      <a
+                        href={`/contratos/${contract.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1"
+                      >
+                        <span className="font-medium text-foreground hover:text-brand-orange">
+                          {contract.quote.client.name}
+                        </span>
+                        <span className="ml-2 text-foreground-muted">
+                          {formatCurrency(total)} · {formatDate(contract.date)}
+                        </span>
+                      </a>
+                      <div className="flex shrink-0 items-center gap-2">
+                        <Link
+                          href={`/contratos/${contract.id}/editar`}
+                          className="rounded-lg border border-border px-2 py-1 text-xs font-medium text-foreground-muted hover:border-brand-orange hover:text-brand-orange"
+                        >
+                          Editar
+                        </Link>
+                        <form action={deleteContract.bind(null, contract.id)}>
                           <Button type="submit" variant="danger" className="px-2 py-1 text-xs">
                             Excluir
                           </Button>
