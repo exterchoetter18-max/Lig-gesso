@@ -98,7 +98,7 @@ export function QuoteSheet({
           <div className="min-w-0 flex-1">
             <div className="flex items-baseline gap-2 border-b border-foreground pb-2 print:pb-1">
               <span className="shrink-0 text-foreground-muted">Nome:</span>
-              <span className="truncate text-lg font-semibold text-foreground print:text-base">
+              <span className="min-w-0 break-words text-lg font-semibold leading-snug text-foreground print:text-base">
                 {quote.client.name}
               </span>
             </div>
@@ -116,7 +116,7 @@ export function QuoteSheet({
         {quote.client.document && (
           <div className="mb-12 flex items-baseline gap-2 border-b border-foreground pb-2 text-base print:mb-3 print:pb-1">
             <span className="shrink-0 text-foreground-muted">CPF / CNPJ:</span>
-            <span className="truncate text-lg font-semibold text-foreground print:text-base">
+            <span className="whitespace-nowrap text-lg font-semibold text-foreground print:text-base">
               {quote.client.document}
             </span>
           </div>
@@ -124,7 +124,7 @@ export function QuoteSheet({
 
         <div className="mb-5 flex items-center justify-between gap-6 break-after-avoid print:mb-2">
           <span className="text-2xl font-bold text-foreground print:text-lg">Serviço</span>
-          <span className="w-40 shrink-0 text-right text-2xl font-bold text-foreground print:text-lg">
+          <span className="w-40 shrink-0 print:w-32 text-right text-2xl font-bold text-foreground print:text-lg">
             Valor
           </span>
         </div>
@@ -138,7 +138,7 @@ export function QuoteSheet({
               <div className="min-w-0 flex-1 border-b border-foreground pb-2 print:pb-1">
                 <span className="text-foreground">{item.description}</span>
               </div>
-              <div className="w-40 shrink-0 border-b border-foreground pb-2 text-right print:pb-1">
+              <div className="w-40 shrink-0 print:w-32 border-b border-foreground pb-2 text-right print:pb-1">
                 <span className="text-foreground">{formatCurrency(item.value)}</span>
               </div>
             </div>
@@ -152,7 +152,7 @@ export function QuoteSheet({
               <div className="min-w-0 flex-1 border-b border-foreground/40 pb-2 print:pb-1">
                 &nbsp;
               </div>
-              <div className="w-40 shrink-0 border-b border-foreground/40 pb-2 text-right print:pb-1">
+              <div className="w-40 shrink-0 print:w-32 border-b border-foreground/40 pb-2 text-right print:pb-1">
                 &nbsp;
               </div>
             </div>
@@ -164,7 +164,7 @@ export function QuoteSheet({
             <div className="mb-4 flex flex-col gap-1 text-lg print:mb-1 print:gap-0 print:text-sm">
               <div className="flex items-center justify-between gap-6">
                 <span className="text-foreground-muted">Subtotal</span>
-                <span className="w-40 shrink-0 text-right text-foreground">
+                <span className="w-40 shrink-0 print:w-32 text-right text-foreground">
                   {formatCurrency(subtotal)}
                 </span>
               </div>
@@ -174,7 +174,7 @@ export function QuoteSheet({
                   {quote.discountType === "PERCENTUAL" &&
                     ` (${quote.discount.toLocaleString("pt-BR")}%)`}
                 </span>
-                <span className="w-40 shrink-0 text-right text-foreground">
+                <span className="w-40 shrink-0 print:w-32 text-right text-foreground">
                   − {formatCurrency(discount)}
                 </span>
               </div>
@@ -182,7 +182,7 @@ export function QuoteSheet({
           )}
           <div className="flex items-center justify-between gap-6">
             <span className="text-2xl font-bold text-foreground print:text-lg">Total</span>
-            <span className="w-40 shrink-0 border-b border-foreground pb-2 text-right text-2xl font-bold text-foreground print:pb-1 print:text-lg">
+            <span className="w-40 shrink-0 print:w-32 border-b border-foreground pb-2 text-right text-2xl font-bold text-foreground print:pb-1 print:text-lg">
               {formatCurrency(total)}
             </span>
           </div>

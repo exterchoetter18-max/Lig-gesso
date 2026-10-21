@@ -79,7 +79,13 @@ export default async function ContratoPage({
 
   return (
     <div className="min-h-screen bg-surface-muted print:bg-white">
-      <style>{`@page { size: A4; margin: 18mm 16mm; }`}</style>
+      {/* O anexo usa uma página sem margem, igual ao orçamento impresso sozinho;
+          com as margens do contrato a folha ficava estreita demais. */}
+      <style>{`
+        @page { size: A4; margin: 18mm 16mm; }
+        @page anexo { size: A4; margin: 0; }
+        .quote-annex { page: anexo; }
+      `}</style>
 
       <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-between gap-3 px-4 py-4 print:hidden">
         <Link href="/documentos" className="text-sm font-medium text-foreground-muted hover:text-brand-orange">
@@ -390,9 +396,9 @@ export default async function ContratoPage({
         </div>
       </article>
 
-      <div className="mx-auto mt-8 max-w-4xl pb-10 break-before-page print:mt-0 print:pb-0">
+      <div className="quote-annex mx-auto mt-8 max-w-4xl pb-10 break-before-page print:mt-0 print:pb-0">
         <QuoteSheet quote={quote} />
-        <p className="mt-2 px-4 text-sm underline print:px-0">Anexo 1</p>
+        <p className="mt-2 px-4 text-sm underline print:px-8">Anexo 1</p>
       </div>
     </div>
   );
